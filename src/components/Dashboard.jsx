@@ -17,6 +17,8 @@ import AddPatientModal from "./AddPatientModal";
 import "../Dashboard.css";
 
 export default function Dashboard() {
+  console.log("Dashboard component rendered"); // Debugging log
+
   const [patients, setPatients] = useState(initialPatients);
   const [showModal, setShowModal] = useState(false);
   const [showSidebar, setShowSidebar] = useState(true);
@@ -50,7 +52,9 @@ export default function Dashboard() {
 
   useEffect(() => {
     const handleEscape = (e) => {
-      if (e.key === "Escape" && showModal) setShowModal(false);
+      if (e.key === "Escape" && showModal) {
+        setShowModal(false);
+      }
     };
     if (showModal && modalRef.current) {
       modalRef.current.focus();
@@ -83,6 +87,7 @@ export default function Dashboard() {
       );
       return;
     }
+
     const id = `P${String(patients.length + 1).padStart(3, "0")}`;
     const timestamp = new Date().toLocaleString();
     const patient = {
@@ -94,7 +99,8 @@ export default function Dashboard() {
       alert: "None",
       timestamp,
     };
-    setPatients([...patients, patient]);
+
+    setPatients((prevPatients) => [...prevPatients, patient]);
     setShowModal(false);
     setNewPatient({
       name: "",
@@ -108,15 +114,22 @@ export default function Dashboard() {
   };
 
   const removePatient = (id) => {
-    setPatients(patients.filter((patient) => patient.id !== id));
+    setPatients((prevPatients) =>
+      prevPatients.filter((patient) => patient.id !== id)
+    );
   };
+
+  // Add a fallback UI to ensure something renders
+  if (!patients || patients.length === 0) {
+    return <div>Loading patients...</div>;
+  }
 
   return (
     <div className="flex h-screen bg-gray-100">
       <Sidebar showSidebar={showSidebar} setShowSidebar={setShowSidebar} />
       <div className="flex-1 overflow-y-auto">
         <TopNav searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <StatsCards cardsData={cardsData} />
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-6">
@@ -132,7 +145,7 @@ export default function Dashboard() {
               <BarChartSection growthData={growthData} loading={loading} />
             </div>
           </div>
-        </div>
+        </main>
       </div>
       <AddPatientModal
         showModal={showModal}

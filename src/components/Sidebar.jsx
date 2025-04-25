@@ -10,6 +10,8 @@ import {
 } from "lucide-react";
 
 export default function Sidebar({ showSidebar, setShowSidebar }) {
+  console.log("Sidebar component rendered"); // Debugging log
+
   return (
     <div
       className={`${
